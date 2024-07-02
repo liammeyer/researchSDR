@@ -1,1 +1,11 @@
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.datasets import mnist
 
+#Dividing between number clients 
+def distribute_data(x, y, num_clients):
+    size = len(x) // num_clients
+    return [(x[i*size:(i+1)*size], y[i*size:(i+1)*size]) for i in range(num_clients)]
+
+num_clients = 5
+clients = distribute_data(x_train, y_train, num_clients)

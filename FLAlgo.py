@@ -72,3 +72,27 @@ for i in range(5):
     plt.subplot(2, 5, j+1)
     plt.imshow(mean_img.reshape((28, 28)))
     plt.axis('off')
+
+
+NUM_CLIENTS = 10
+NUM_EPOCHS = 5
+BATCH_SIZE = 20
+SHUFFLE_BUFFER = 100
+PREFETCH_BUFFER = 10
+
+def preprocess(dataset):
+
+  def batch_format_fn(element):
+    """Flatten a batch `pixels` and return the features as an `OrderedDict`."""
+    return collections.OrderedDict(
+        x=tf.reshape(element['pixels'], [-1, 784]),
+        y=tf.reshape(element['label'], [-1, 1]))
+
+  return dataset.repeat(NUM_EPOCHS).shuffle(SHUFFLE_BUFFER, seed=1).batch(
+      BATCH_SIZE).map(batch_format_fn).prefetch(PREFETCH_BUFFER)
+
+preprocessed_example_dataset = preprocess(example_dataset)
+
+sample_batch = tf.nest.map_structure(lambda x: x.numpy(), next(iter(preprocessed_example_dataset)))
+
+print (sample_batch)

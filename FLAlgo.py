@@ -99,6 +99,13 @@ sample_batch = tf.nest.map_structure(lambda x: x.numpy(), next(iter(preprocessed
 
 print (sample_batch)
 
+
+def make_federated_data(client_data, client_ids):
+  return [
+      preprocess(client_data.create_tf_dataset_for_client(x))
+      for x in client_ids
+  ]
+
 sample_clients = emnist_train.client_ids[0:NUM_CLIENTS]
 
 federated_train_data = make_federated_data(emnist_train, sample_clients)

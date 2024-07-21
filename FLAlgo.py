@@ -17,3 +17,6 @@ example_element = next(iter(example_dataset))
 
 example_element['label'].numpy()
 
+plt.imshow(example_element['pixels'].numpy(), cmap='gray', aspect='equal')
+plt.grid(False)
+_ = plt.show()

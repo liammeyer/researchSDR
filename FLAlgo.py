@@ -3,6 +3,8 @@ import tensorflow as tf
 import tensorflow_federated as tff
 import matplotlib
 from matplotlib import pyplot as plt
+import collections
+
 
 #Load the data in
 emnist_train, emnist_test = tff.simulation.datasets.emnist.load_data()

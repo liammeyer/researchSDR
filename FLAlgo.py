@@ -29,7 +29,7 @@ _ = plt.show()
 figure = plt.figure(figsize=(20, 4))
 j = 0
 
-for example in example_dataset.take(1):
+for example in example_dataset.take(40):
   plt.subplot(4, 10, j+1)
   plt.imshow(example['pixels'].numpy(), cmap='gray', aspect='equal')
   plt.axis('off')

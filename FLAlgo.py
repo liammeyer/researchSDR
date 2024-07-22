@@ -30,6 +30,14 @@ print("Second label:", second_example_element['label'].numpy())
 third_example_element = next(example_iterator)
 print("Third label:", third_example_element['label'].numpy())
 
+fourth_example_element = next(example_iterator)
+print("fourth label:", fourth_example_element['label'].numpy())
+
+
+fifth_example_element = next(example_iterator)
+print("fifth label:", fifth_example_element['label'].numpy())
+
+
 '''
 example_element = next(iter(example_dataset))
 

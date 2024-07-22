@@ -6,19 +6,21 @@ from matplotlib import pyplot as plt
 import collections
 
 
-#Load the data in
+#Load the dataset in as training and testing
 emnist_train, emnist_test = tff.simulation.datasets.emnist.load_data()
 
-len(emnist_train.client_ids)
-emnist_train.element_type_structure
+len(emnist_train.client_ids) #checking number of clients - 3383
+emnist_train.element_type_structure #describes the data format (structure) of the training data (same as testing)
 
-example_dataset = emnist_train.create_tf_dataset_for_client(
-    emnist_train.client_ids[0])
+#Tensorflow dataset for specific client based on individual ID
+#example_dataset holds dataset for first client (used to train model or inspect data)
+example_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_ids[0])
 
 example_element = next(iter(example_dataset))
 
-example_element['label'].numpy()
+print (example_element['label'].numpy()) #converts TensorFlow tensor into NumPy array
 
+'''
 plt.imshow(example_element['pixels'].numpy(), cmap='gray', aspect='equal')
 plt.grid(False)
 _ = plt.show()
@@ -112,3 +114,4 @@ federated_train_data = make_federated_data(emnist_train, sample_clients)
 
 print(f'Number of client datasets: {len(federated_train_data)}')
 print(f'First dataset: {federated_train_data[0]}')
+'''

@@ -16,29 +16,6 @@ emnist_train.element_type_structure #describes the data format (structure) of th
 #example_dataset holds dataset for first client (used to train model or inspect data)
 example_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_ids[0])
 
-# Initialize an iterator
-example_iterator = iter(example_dataset)
-
-# Fetch the first example element
-first_example_element = next(example_iterator)
-print("First label:", first_example_element['label'].numpy())
-
-second_example_element = next (example_iterator)
-print("Second label:", second_example_element['label'].numpy())
-
-# Fetch the second example element
-third_example_element = next(example_iterator)
-print("Third label:", third_example_element['label'].numpy())
-
-fourth_example_element = next(example_iterator)
-print("fourth label:", fourth_example_element['label'].numpy())
-
-
-fifth_example_element = next(example_iterator)
-print("fifth label:", fifth_example_element['label'].numpy())
-
-
-'''
 example_element = next(iter(example_dataset))
 
 print (example_element['label'].numpy()) #converts TensorFlow tensor into NumPy array
@@ -52,7 +29,7 @@ _ = plt.show()
 figure = plt.figure(figsize=(20, 4))
 j = 0
 
-for example in example_dataset.take(40):
+for example in example_dataset.take(1):
   plt.subplot(4, 10, j+1)
   plt.imshow(example['pixels'].numpy(), cmap='gray', aspect='equal')
   plt.axis('off')

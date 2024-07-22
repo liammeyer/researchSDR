@@ -14,7 +14,7 @@ emnist_train.element_type_structure #describes the data format (structure) of th
 
 #Tensorflow dataset for specific client based on individual ID
 #example_dataset holds dataset for first client (used to train model or inspect data)
-print (example_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_ids[0]))
+example_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_ids[0])
 
 print (example_element = next(iter(example_dataset)))
 

@@ -16,11 +16,24 @@ emnist_train.element_type_structure #describes the data format (structure) of th
 #example_dataset holds dataset for first client (used to train model or inspect data)
 example_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_ids[0])
 
-print (example_element = next(iter(example_dataset)))
+# Initialize an iterator
+example_iterator = iter(example_dataset)
+
+# Fetch the first example element
+first_example_element = next(example_iterator)
+print("First label:", first_example_element['label'].numpy())
+
+# Fetch the second example element
+second_example_element = next(example_iterator)
+print("Second label:", second_example_element['label'].numpy())
+
+
+'''
+example_element = next(iter(example_dataset))
 
 print (example_element['label'].numpy()) #converts TensorFlow tensor into NumPy array
 
-'''
+
 plt.imshow(example_element['pixels'].numpy(), cmap='gray', aspect='equal')
 plt.grid(False)
 _ = plt.show()

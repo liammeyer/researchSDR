@@ -23,10 +23,12 @@ example_iterator = iter(example_dataset)
 first_example_element = next(example_iterator)
 print("First label:", first_example_element['label'].numpy())
 
-# Fetch the second example element
-second_example_element = next(example_iterator)
-print("Second label:", second_example_element['label'].numpy())
+second_example_element = next (example_iterator)
+print("Second label:" second_example_element['label'].numpy()]
 
+# Fetch the second example element
+third_example_element = next(example_iterator)
+print("Third label:", third_example_element['label'].numpy()]
 
 '''
 example_element = next(iter(example_dataset))

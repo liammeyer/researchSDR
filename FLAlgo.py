@@ -114,4 +114,3 @@ federated_train_data = make_federated_data(emnist_train, sample_clients)
 
 print(f'Number of client datasets: {len(federated_train_data)}')
 print(f'First dataset: {federated_train_data[0]}')
-'''

@@ -11,7 +11,10 @@ from collections.abc import Callable
 emnist_train, emnist_test = tff.simulation.datasets.emnist.load_data()
 
 len(emnist_train.client_ids) #checking number of clients - 3383
-emnist_train.element_type_structure #describes the data format (structure) of the training data (same as testing)
+
+#describes the data format (structure) of the training data (same as testing)
+#Label (tensor) and pixels (28x28 grid) it reads
+emnist_train.element_type_structure 
 
 #Tensorflow dataset for specific client based on individual ID
 #example_dataset holds dataset for first client (used to train model or inspect data)
@@ -20,6 +23,41 @@ example_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_
 example_element = next(iter(example_dataset))
 
 print (example_element['label'].numpy()) #converts TensorFlow tensor into NumPy array
+
+first_example_element = next(example_iterator)
+print("First label:", first_example_element['label'].numpy())
+
+# Fetch the second example element
+second_example_element = next(example_iterator)
+print("Second label:", second_example_element['label'].numpy())
+
+# Fetch the third example element
+third_example_element = next(example_iterator)
+print("Third label:", third_example_element['label'].numpy())
+
+fourth_example_element = next(example_iterator)
+print("fourth label:", fourth_example_element['label'].numpy())
+
+# Fetch the second example element
+fifth_example_element = next(example_iterator)
+print("fifth label:", fifth_example_element['label'].numpy())
+
+# Fetch the third example element
+sixth_example_element = next(example_iterator)
+print("sixth label:", sixth_example_element['label'].numpy())
+
+# Fetch the second example element
+seventh_example_element = next(example_iterator)
+print("seventh label:", seventh_example_element['label'].numpy())
+
+# Fetch the third example element
+eigth_example_element = next(example_iterator)
+print("eigth label:", eigth_example_element['label'].numpy())
+
+
+
+
+
 
 
 plt.imshow(example_element['pixels'].numpy(), cmap='gray', aspect='equal')

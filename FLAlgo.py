@@ -20,22 +20,11 @@ emnist_train.element_type_structure
 #example_dataset holds dataset for first client (used to train model or inspect data)
 example_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_ids[0])
 
-example_iterator = iter(example_dataset)
-count = 0
 
-
-try:
-    while count < 55:
-        example_element = next(example_iterator)
-        print("Label:", example_element['label'].numpy())
-        count += 1
-except StopIteration:
-    print("Reached the end of the dataset before 25 entries were found.")
-#print (example_element['label'].numpy()) #converts TensorFlow tensor into NumPy array
-
-
-
-
+#Each label is a number 0-9 that identifies the related 28x28 grid which is a drawn number they are learning off of
+example_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_ids[0])
+example_element = next(iter(example_dataset))
+example_element['label'].numpy()
 
 
 

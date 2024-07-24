@@ -25,7 +25,7 @@ count = 0
 
 
 try:
-    while count < 25:
+    while count < 55:
         example_element = next(example_iterator)
         print("Label:", example_element['label'].numpy())
         count += 1

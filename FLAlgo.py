@@ -22,37 +22,12 @@ example_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_
 
 example_element = next(iter(example_dataset))
 
-print (example_element['label'].numpy()) #converts TensorFlow tensor into NumPy array
 
-first_example_element = next(example_iterator)
-print("First label:", first_example_element['label'].numpy())
-
-# Fetch the second example element
-second_example_element = next(example_iterator)
-print("Second label:", second_example_element['label'].numpy())
-
-# Fetch the third example element
-third_example_element = next(example_iterator)
-print("Third label:", third_example_element['label'].numpy())
-
-fourth_example_element = next(example_iterator)
-print("fourth label:", fourth_example_element['label'].numpy())
-
-# Fetch the second example element
-fifth_example_element = next(example_iterator)
-print("fifth label:", fifth_example_element['label'].numpy())
-
-# Fetch the third example element
-sixth_example_element = next(example_iterator)
-print("sixth label:", sixth_example_element['label'].numpy())
-
-# Fetch the second example element
-seventh_example_element = next(example_iterator)
-print("seventh label:", seventh_example_element['label'].numpy())
-
-# Fetch the third example element
-eigth_example_element = next(example_iterator)
-print("eigth label:", eigth_example_element['label'].numpy())
+for i in range(1, 25):
+    example_element = next(example_iterator)
+    print(f"Label {i}:", example_element['label'].numpy())
+    print (" ")
+#print (example_element['label'].numpy()) #converts TensorFlow tensor into NumPy array
 
 
 

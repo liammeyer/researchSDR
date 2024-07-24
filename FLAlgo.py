@@ -4,6 +4,7 @@ import tensorflow_federated as tff
 import matplotlib
 from matplotlib import pyplot as plt
 import collections
+from collections.abc import Callable
 
 
 #Load the dataset in as training and testing
@@ -34,8 +35,6 @@ for example in example_dataset.take(40):
   plt.imshow(example['pixels'].numpy(), cmap='gray', aspect='equal')
   plt.axis('off')
   j += 1
-
-
 
 
 
@@ -114,3 +113,41 @@ federated_train_data = make_federated_data(emnist_train, sample_clients)
 
 print(f'Number of client datasets: {len(federated_train_data)}')
 print(f'First dataset: {federated_train_data[0]}')
+
+
+def create_keras_model():
+  return tf.keras.models.Sequential([
+      tf.keras.layers.InputLayer(input_shape=(784,)),
+      tf.keras.layers.Dense(10, kernel_initializer='zeros'),
+      tf.keras.layers.Softmax(),
+  ])
+
+def model_fn():
+  # We _must_ create a new model here, and _not_ capture it from an external
+  # scope. TFF will call this within different graph contexts.
+  keras_model = create_keras_model()
+  return tff.learning.models.from_keras_model(
+      keras_model,
+      input_spec=preprocessed_example_dataset.element_spec,
+      loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+      metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
+
+training_process = tff.learning.algorithms.build_weighted_fed_avg(
+    model_fn,
+    client_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=0.02),
+    server_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=1.0))
+
+print(training_process.initialize.type_signature.formatted_representation())
+train_state = training_process.initialize()
+
+result = training_process.next(train_state, federated_train_data)
+train_state = result.state
+train_metrics = result.metrics
+print('round  1, metrics={}'.format(train_metrics))
+
+NUM_ROUNDS = 11
+for round_num in range(2, NUM_ROUNDS):
+  result = training_process.next(train_state, federated_train_data)
+  train_state = result.state
+  train_metrics = result.metrics
+  print('round {:2d}, metrics={}'.format(round_num, train_metrics))

@@ -41,7 +41,7 @@ for example in example_dataset.take(40): #first 40 clients
   plt.imshow(example['pixels'].numpy(), cmap='gray', aspect='equal')
   plt.axis('off')
   j += 1
-
+plt.show()
 
 
 #Number of examples per layer 6 clients
@@ -62,7 +62,7 @@ for i in range(6): #first 6 clients only
         plot_data[j],
         density=False,
         bins=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) #making a histogram where each example goes into a category so we can see distribution
-
+plt.show()
 
 
 
@@ -80,7 +80,7 @@ for i in range(5):
     plt.subplot(2, 5, j+1)
     plt.imshow(mean_img.reshape((28, 28)))
     plt.axis('off')
-
+plt.show()
 
 '''
 NUM_CLIENTS = 10

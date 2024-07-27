@@ -45,15 +45,14 @@ for example in example_dataset.take(40): #first 40 clients
 
 
 #Number of examples per layer 6 clients
-#How many numbers (0-9) exiat for each of the first 6 clients
+#How many numbers (0-9) exist for each of the first 6 clients
 f = plt.figure(figsize=(12, 7))
 f.suptitle('Label Counts for a Sample of Clients')
 for i in range(6): #first 6 clients only
   client_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_ids[i])
   plot_data = collections.defaultdict(list)
   for example in client_dataset:
-    # Append counts individually per label to make plots
-    # more colorful instead of one color per plot.
+    #Append counts individually per label to make plots
     label = example['label'].numpy()
     plot_data[label].append(label)
   plt.subplot(2, 3, i+1)
@@ -62,38 +61,15 @@ for i in range(6): #first 6 clients only
     plt.hist(
         plot_data[j],
         density=False,
-        bins=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        bins=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) #making a histogram where each example goes into a category so we can see distribution
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Each client has different mean images, meaning each client will be nudging
-# the model in their own directions locally.
-
+#Each client is slightly different, each client nudges model in individual direction locally
 for i in range(5):
-  client_dataset = emnist_train.create_tf_dataset_for_client(
-      emnist_train.client_ids[i])
+  client_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_ids[i])
   plot_data = collections.defaultdict(list)
   for example in client_dataset:
     plot_data[example['label'].numpy()].append(example['pixels'].numpy())
@@ -106,6 +82,7 @@ for i in range(5):
     plt.axis('off')
 
 
+'''
 NUM_CLIENTS = 10
 NUM_EPOCHS = 5
 BATCH_SIZE = 20
@@ -180,3 +157,4 @@ for round_num in range(2, NUM_ROUNDS):
   train_state = result.state
   train_metrics = result.metrics
   print('round {:2d}, metrics={}'.format(round_num, train_metrics))
+  '''

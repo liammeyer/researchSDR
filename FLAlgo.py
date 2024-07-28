@@ -33,7 +33,8 @@ plt.grid(False)
 _ = plt.show()
 
 
-##Example MNIST digits for one client (only first 40)
+#Example MNIST digits for one client (only first 40)
+#Looking at client1's first 40 numbers
 figure = plt.figure(figsize=(20, 4))
 j = 0
 for example in example_dataset.take(40): #first 40 clients
@@ -69,7 +70,7 @@ plt.show()
 
 #Each client is slightly different, each client nudges model in individual direction locally
 for i in range(5):
-  client_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_ids[i])
+  client_dataset = emnist_train.create_tf_dataset_for_client(emnist_train.client_ids[i]) #getting client specific dataset
   plot_data = collections.defaultdict(list)
   for example in client_dataset:
     plot_data[example['label'].numpy()].append(example['pixels'].numpy())
@@ -82,29 +83,39 @@ for i in range(5):
     plt.axis('off')
 plt.show()
 
-'''
-NUM_CLIENTS = 10
-NUM_EPOCHS = 5
-BATCH_SIZE = 20
-SHUFFLE_BUFFER = 100
-PREFETCH_BUFFER = 10
 
+NUM_CLIENTS = 10
+NUM_EPOCHS = 5 #num times repeated
+BATCH_SIZE = 20 #how many are processed together - 
+SHUFFLE_BUFFER = 100 #randomness
+PREFETCH_BUFFER = 10 #preloaded batches
+
+
+#transforms data into format for training ML models - Neural Networks here using Keras and TensorFlow
 def preprocess(dataset):
 
-  def batch_format_fn(element):
+  def batch_format_fn(element): #flattening of the pixels
     """Flatten a batch `pixels` and return the features as an `OrderedDict`."""
     return collections.OrderedDict(
         x=tf.reshape(element['pixels'], [-1, 784]),
         y=tf.reshape(element['label'], [-1, 1]))
 
-  return dataset.repeat(NUM_EPOCHS).shuffle(SHUFFLE_BUFFER, seed=1).batch(
-      BATCH_SIZE).map(batch_format_fn).prefetch(PREFETCH_BUFFER)
+  return dataset.repeat(NUM_EPOCHS) #goes through the flattening num_epochs times
+      .shuffle(SHUFFLE_BUFFER, seed=1) #shuffles data based on buffer and seed ensures consistent reproducibility
+      .batch(BATCH_SIZE) #determines data points fed into model at single time during training
+      .map(batch_format_fn) #applies function to each element (for flattening and reshaping)
+      .prefetch(PREFETCH_BUFFER) #fetches next batch to decrease latency and improve throughput
 
-preprocessed_example_dataset = preprocess(example_dataset)
+preprocessed_example_dataset = preprocess(example_dataset) #verifying function worked
 
 sample_batch = tf.nest.map_structure(lambda x: x.numpy(), next(iter(preprocessed_example_dataset)))
 
+
+#Print x and y ordered dict
+#X represents an image (784 digits ling) and y represents that label (0-9)
+#Both are arrays
 print (sample_batch)
+
 
 
 def make_federated_data(client_data, client_ids):
@@ -113,14 +124,14 @@ def make_federated_data(client_data, client_ids):
       for x in client_ids
   ]
 
-sample_clients = emnist_train.client_ids[0:NUM_CLIENTS]
+sample_clients = emnist_train.client_ids[0:NUM_CLIENTS] #choosing number of clients, sample is same each time
 
 federated_train_data = make_federated_data(emnist_train, sample_clients)
 
 print(f'Number of client datasets: {len(federated_train_data)}')
 print(f'First dataset: {federated_train_data[0]}')
 
-
+'''
 def create_keras_model():
   return tf.keras.models.Sequential([
       tf.keras.layers.InputLayer(input_shape=(784,)),
@@ -157,4 +168,5 @@ for round_num in range(2, NUM_ROUNDS):
   train_state = result.state
   train_metrics = result.metrics
   print('round {:2d}, metrics={}'.format(round_num, train_metrics))
-  '''
+  
+'''

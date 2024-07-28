@@ -101,10 +101,10 @@ def preprocess(dataset):
         y=tf.reshape(element['label'], [-1, 1]))
 
   return dataset.repeat(NUM_EPOCHS) #goes through the flattening num_epochs times
-      .shuffle(SHUFFLE_BUFFER, seed=1) #shuffles data based on buffer and seed ensures consistent reproducibility
-      .batch(BATCH_SIZE) #determines data points fed into model at single time during training
-      .map(batch_format_fn) #applies function to each element (for flattening and reshaping)
-      .prefetch(PREFETCH_BUFFER) #fetches next batch to decrease latency and improve throughput
+    .shuffle(SHUFFLE_BUFFER, seed=1) #shuffles data based on buffer and seed ensures consistent reproducibility
+    .batch(BATCH_SIZE) #determines data points fed into model at single time during training
+    .map(batch_format_fn) #applies function to each element (for flattening and reshaping)
+    .prefetch(PREFETCH_BUFFER) #fetches next batch to decrease latency and improve throughput
 
 preprocessed_example_dataset = preprocess(example_dataset) #verifying function worked
 

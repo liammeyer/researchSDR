@@ -106,7 +106,7 @@ def preprocess(dataset):
 #determines data points fed into model at single time during training
 #applies function to each element (for flattening and reshaping)
 #fetches next batch to decrease latency and improve throughput
-return dataset.repeat(NUM_EPOCHS).shuffle(SHUFFLE_BUFFER, seed=1).batch(BATCH_SIZE).map(batch_format_fn).prefetch(PREFETCH_BUFFER) 
+  return dataset.repeat(NUM_EPOCHS).shuffle(SHUFFLE_BUFFER, seed=1).batch(BATCH_SIZE).map(batch_format_fn).prefetch(PREFETCH_BUFFER) 
 
 preprocessed_example_dataset = preprocess(example_dataset) #verifying function worked
 

@@ -154,7 +154,9 @@ def model_fn():
 #Build federated averaging process - compute locally and averaged on server
 training_process = tff.learning.algorithms.build_weighted_fed_avg(
     model_fn,
+    #compute local model updates on client
     client_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=0.02),
+    #applies averaged update to global model
     server_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=1.0))
 
 print(training_process.initialize.type_signature.formatted_representation())

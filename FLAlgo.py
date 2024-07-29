@@ -171,4 +171,64 @@ for round_num in range(2, NUM_ROUNDS):
   train_metrics = result.metrics
   print('round {:2d}, metrics={}'.format(round_num, train_metrics))
   
+MnistVariables = collections.namedtuple('MnistVariables', 'weights bias num_examples loss_sum accuracy_sum')
+def create_mnist_variables():
+  return MnistVariables(
+      weights=tf.Variable(
+          lambda: tf.zeros(dtype=tf.float32, shape=(784, 10)),
+          name='weights',
+          trainable=True),
+      bias=tf.Variable(
+          lambda: tf.zeros(dtype=tf.float32, shape=(10)),
+          name='bias',
+          trainable=True),
+      num_examples=tf.Variable(0.0, name='num_examples', trainable=False),
+      loss_sum=tf.Variable(0.0, name='loss_sum', trainable=False),
+      accuracy_sum=tf.Variable(0.0, name='accuracy_sum', trainable=False))
+
+def predict_on_batch(variables, x):
+  return tf.nn.softmax(tf.matmul(x, variables.weights) + variables.bias)
+
+def mnist_forward_pass(variables, batch):
+  y = predict_on_batch(variables, batch['x'])
+  predictions = tf.cast(tf.argmax(y, 1), tf.int32)
+
+  flat_labels = tf.reshape(batch['y'], [-1])
+  loss = -tf.reduce_mean(
+      tf.reduce_sum(tf.one_hot(flat_labels, 10) * tf.math.log(y), axis=[1]))
+  accuracy = tf.reduce_mean(
+      tf.cast(tf.equal(predictions, flat_labels), tf.float32))
+
+  num_examples = tf.cast(tf.size(batch['y']), tf.float32)
+
+  variables.num_examples.assign_add(num_examples)
+  variables.loss_sum.assign_add(loss * num_examples)
+  variables.accuracy_sum.assign_add(accuracy * num_examples)
+
+  return loss, predictions
+
+def get_local_unfinalized_metrics(variables):
+  return collections.OrderedDict(
+      num_examples=[variables.num_examples],
+      loss=[variables.loss_sum, variables.num_examples],
+      accuracy=[variables.accuracy_sum, variables.num_examples])
+
+def get_metric_finalizers():
+  return collections.OrderedDict(
+      num_examples=tf.function(func=lambda x: x[0]),
+      loss=tf.function(func=lambda x: x[0] / x[1]),
+      accuracy=tf.function(func=lambda x: x[0] / x[1]))
+
+training_process = tff.learning.algorithms.build_weighted_fed_avg(MnistModel,client_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=0.02))
+train_state = training_process.initialize()
+result = training_process.next(train_state, federated_train_data)
+train_state = result.state
+metrics = result.metrics
+print('round  1, metrics={}'.format(metrics))
+
+for round_num in range(2, 11):
+  result = training_process.next(train_state, federated_train_data)
+  train_state = result.state
+  metrics = result.metrics
+  print('round {:2d}, metrics={}'.format(round_num, metrics))
 

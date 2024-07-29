@@ -219,6 +219,65 @@ def get_metric_finalizers():
       loss=tf.function(func=lambda x: x[0] / x[1]),
       accuracy=tf.function(func=lambda x: x[0] / x[1]))
 
+
+
+class MnistModel(tff.learning.models.VariableModel):
+
+  def __init__(self):
+    self._variables = create_mnist_variables()
+
+  @property
+  def trainable_variables(self):
+    return [self._variables.weights, self._variables.bias]
+
+  @property
+  def non_trainable_variables(self):
+    return []
+
+  @property
+  def local_variables(self):
+    return [
+        self._variables.num_examples, self._variables.loss_sum,
+        self._variables.accuracy_sum
+    ]
+
+  @property
+  def input_spec(self):
+    return collections.OrderedDict(
+        x=tf.TensorSpec([None, 784], tf.float32),
+        y=tf.TensorSpec([None, 1], tf.int32))
+
+  @tf.function
+  def predict_on_batch(self, x, training=True):
+    del training
+    return predict_on_batch(self._variables, x)
+
+  @tf.function
+  def forward_pass(self, batch, training=True):
+    del training
+    loss, predictions = mnist_forward_pass(self._variables, batch)
+    num_exmaples = tf.shape(batch['x'])[0]
+    return tff.learning.models.BatchOutput(
+        loss=loss, predictions=predictions, num_examples=num_exmaples)
+
+  @tf.function
+  def report_local_unfinalized_metrics(
+      self) -> collections.OrderedDict[str, list[tf.Tensor]]:
+    """Creates an `OrderedDict` of metric names to unfinalized values."""
+    return get_local_unfinalized_metrics(self._variables)
+
+  def metric_finalizers(
+      self) -> collections.OrderedDict[str, Callable[[list[tf.Tensor]], tf.Tensor]]:
+    """Creates an `OrderedDict` of metric names to finalizers."""
+    return get_metric_finalizers()
+
+  @tf.function
+  def reset_metrics(self):
+    """Resets metrics variables to initial value."""
+    for var in self.local_variables:
+      var.assign(tf.zeros_like(var))
+
+
 training_process = tff.learning.algorithms.build_weighted_fed_avg(MnistModel,client_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=0.02))
 train_state = training_process.initialize()
 result = training_process.next(train_state, federated_train_data)

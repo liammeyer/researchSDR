@@ -151,13 +151,14 @@ def model_fn():
       loss=tf.keras.losses.SparseCategoricalCrossentropy(),
       metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
 
+#Build federated averaging process - compute locally and averaged on server
 training_process = tff.learning.algorithms.build_weighted_fed_avg(
     model_fn,
     client_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=0.02),
     server_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=1.0))
 
 print(training_process.initialize.type_signature.formatted_representation())
-train_state = training_process.initialize()
+train_state = training_process.initialize() #sets up initial state like initial parameters
 
 result = training_process.next(train_state, federated_train_data)
 train_state = result.state

@@ -158,11 +158,13 @@ training_process = tff.learning.algorithms.build_weighted_fed_avg(
 print(training_process.initialize.type_signature.formatted_representation())
 train_state = training_process.initialize() #sets up initial state like initial parameters
 
-result = training_process.next(train_state, federated_train_data)
+#Goes through first round to show - computes updates
+result = training_process.next(train_state, federated_train_data) #first round
 train_state = result.state
-train_metrics = result.metrics
+train_metrics = result.metrics #recieves metrics
 print('round  1, metrics={}'.format(train_metrics))
 
+#Moves to next rounds to keep re-doing and printing the process
 NUM_ROUNDS = 11
 for round_num in range(2, NUM_ROUNDS):
   result = training_process.next(train_state, federated_train_data)
@@ -171,6 +173,7 @@ for round_num in range(2, NUM_ROUNDS):
   print('round {:2d}, metrics={}'.format(round_num, train_metrics))
 
 '''
+#Additional part of tutorial I was trying out and messing with
 
 MnistVariables = collections.namedtuple('MnistVariables', 'weights bias num_examples loss_sum accuracy_sum')
 def create_mnist_variables():

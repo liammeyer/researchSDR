@@ -187,9 +187,6 @@ with summary_writer.as_default():
     for name, value in train_metrics['client_work']['train'].items():
       tf.summary.scalar(name, value, step=round_num)
 
-!ls {logdir}
-%tensorboard --logdir {logdir} --port=0
-
 
 
 

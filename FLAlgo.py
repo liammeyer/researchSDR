@@ -151,7 +151,7 @@ def model_fn():
 training_process = tff.learning.algorithms.build_weighted_fed_avg(
     model_fn,
     #compute local model updates on client
-    client_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=0.03),
+    client_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=0.05),
     #applies averaged update to global model
     server_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=1.0))
 

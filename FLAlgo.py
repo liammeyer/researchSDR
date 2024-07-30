@@ -63,7 +63,7 @@ for i in range(6): #first 6 clients only
         plot_data[j],
         density=False,
         bins=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) #making a histogram where each example goes into a category so we can see distribution
-#plt.show()
+plt.show()
 
 
 
@@ -170,32 +170,13 @@ for round_num in range(2, NUM_ROUNDS):
   train_metrics = result.metrics
   print('round {:2d}, metrics={}'.format(round_num, train_metrics))
 
-
-logdir = "/tmp/logs/scalars/training/"
-try:
-  tf.io.gfile.rmtree(logdir)  # delete any previous results
-except tf.errors.NotFoundError as e:
-  pass # Ignore if the directory didn't previously exist.
-summary_writer = tf.summary.create_file_writer(logdir)
-train_state = training_process.initialize()
-
-with summary_writer.as_default():
-  for round_num in range(1, NUM_ROUNDS):
-    result = training_process.next(train_state, federated_train_data)
-    train_state = result.state
-    train_metrics = result.metrics
-    for name, value in train_metrics['client_work']['train'].items():
-      tf.summary.scalar(name, value, step=round_num)
-
-
-
-
+'''
 
 MnistVariables = collections.namedtuple('MnistVariables', 'weights bias num_examples loss_sum accuracy_sum')
 def create_mnist_variables():
   return MnistVariables(
       weights=tf.Variable(
-          lambda: tf.zeros(dtype=tf.float32, shape=(784, 10)),
+          lambda: tf.zeros(dtype=tf.float32, shape=(784, 10)), #shape is based off of image and label
           name='weights',
           trainable=True),
       bias=tf.Variable(
@@ -311,3 +292,4 @@ for round_num in range(2, 11):
   metrics = result.metrics
   print('round {:2d}, metrics={}'.format(round_num, metrics))
 
+'''

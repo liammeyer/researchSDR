@@ -93,9 +93,7 @@ PREFETCH_BUFFER = 10 #preloaded batches
 
 #transforms data into format for training ML models - Neural Networks here using Keras and TensorFlow
 def preprocess(dataset):
-
-  def batch_format_fn(element): #flattening of the pixels
-    """Flatten a batch `pixels` and return the features as an `OrderedDict`."""
+  def batch_format_fn(element): #flattening of the pixels - return the features as an `OrderedDict`
     return collections.OrderedDict(
         x=tf.reshape(element['pixels'], [-1, 784]),
         y=tf.reshape(element['label'], [-1, 1]))
@@ -142,8 +140,6 @@ def create_keras_model():
 
 
 def model_fn():
-  # We _must_ create a new model here, and _not_ capture it from an external
-  # scope. TFF will call this within different graph contexts.
   keras_model = create_keras_model()
   return tff.learning.models.from_keras_model(
       keras_model,
@@ -155,7 +151,7 @@ def model_fn():
 training_process = tff.learning.algorithms.build_weighted_fed_avg(
     model_fn,
     #compute local model updates on client
-    client_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=0.02),
+    client_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=0.03),
     #applies averaged update to global model
     server_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=1.0))
 

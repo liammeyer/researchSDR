@@ -150,9 +150,9 @@ def model_fn():
 #Build federated averaging process - compute locally and averaged on server
 training_process = tff.learning.algorithms.build_weighted_fed_avg(
     model_fn,
-    #compute local model updates on client
+    #compute local model updates on client - big enough to reduce loss but small enough to not overshoot
     client_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=0.02),
-    #applies averaged update to global model
+    #applies averaged update to global model - aggressive updates to quickly integrate
     server_optimizer_fn=lambda: tf.keras.optimizers.SGD(learning_rate=1.0))
 
 print(training_process.initialize.type_signature.formatted_representation())
@@ -169,7 +169,31 @@ for round_num in range(2, NUM_ROUNDS):
   train_state = result.state
   train_metrics = result.metrics
   print('round {:2d}, metrics={}'.format(round_num, train_metrics))
-  
+
+
+logdir = "/tmp/logs/scalars/training/"
+try:
+  tf.io.gfile.rmtree(logdir)  # delete any previous results
+except tf.errors.NotFoundError as e:
+  pass # Ignore if the directory didn't previously exist.
+summary_writer = tf.summary.create_file_writer(logdir)
+train_state = training_process.initialize()
+
+with summary_writer.as_default():
+  for round_num in range(1, NUM_ROUNDS):
+    result = training_process.next(train_state, federated_train_data)
+    train_state = result.state
+    train_metrics = result.metrics
+    for name, value in train_metrics['client_work']['train'].items():
+      tf.summary.scalar(name, value, step=round_num)
+
+!ls {logdir}
+%tensorboard --logdir {logdir} --port=0
+
+
+
+
+
 MnistVariables = collections.namedtuple('MnistVariables', 'weights bias num_examples loss_sum accuracy_sum')
 def create_mnist_variables():
   return MnistVariables(
